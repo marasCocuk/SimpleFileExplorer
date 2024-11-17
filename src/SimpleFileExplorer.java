@@ -2,11 +2,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.Stack;
 
 public class SimpleFileExplorer extends JFrame {
     private JList<File> fileList;
     private DefaultListModel<File> listModel;
     private File currentDirectory;
+    private Stack<File> historyStack;
+    private JButton backButton;
+    private JButton forwardButton;
+    private File forwardDirectory;
 
     public SimpleFileExplorer() {
         setTitle("Basit Dosya Gezgini");
@@ -31,7 +36,20 @@ public class SimpleFileExplorer extends JFrame {
             }
         });
 
+        // İleri geri butonları
+        historyStack = new Stack<>();
+        backButton = new JButton("Geri");
+        forwardButton = new JButton("İleri");
+
+        backButton.addActionListener(e -> goBack());
+        forwardButton.addActionListener(e -> goForward());
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(backButton);
+        buttonPanel.add(forwardButton);
+
         JScrollPane scrollPane = new JScrollPane(fileList);
+        add(buttonPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
         // Başlangıç dizinini ayarla
@@ -40,11 +58,36 @@ public class SimpleFileExplorer extends JFrame {
     }
 
     private void openDirectory(File directory) {
+        if (currentDirectory != null) {
+            historyStack.push(currentDirectory);
+        }
         currentDirectory = directory;
+        forwardDirectory = null; // Yeni bir dizine geçildiğinde ileri dizini sıfırla
+        updateTitleAndList();
+    }
+
+    private void goBack() {
+        if (!historyStack.isEmpty()) {
+            forwardDirectory = currentDirectory; // Mevcut dizini ileri dizin olarak sakla
+            currentDirectory = historyStack.pop(); // Önceki dizine geç
+            updateTitleAndList();
+        }
+    }
+
+    private void goForward() {
+        if (forwardDirectory != null) {
+            historyStack.push(currentDirectory); // Mevcut dizini geri dizin olarak sakla
+            currentDirectory = forwardDirectory; // İleri dizine geç
+            forwardDirectory = null; // İleri dizini sıfırla
+            updateTitleAndList();
+        }
+    }
+
+    private void updateTitleAndList() {
         setTitle("Basit Dosya Gezgini - " + currentDirectory.getAbsolutePath());
         listModel.clear();
 
-        File[] files = directory.listFiles();
+        File[] files = currentDirectory.listFiles();
         if (files != null) {
             for (File file : files) {
                 listModel.addElement(file);
