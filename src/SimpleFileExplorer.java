@@ -27,6 +27,8 @@ public class SimpleFileExplorer extends JFrame {
 
     private JTextArea fileInfoArea;
 
+    private JTextField currentPathField;
+
 
     public SimpleFileExplorer() {
 
@@ -88,11 +90,22 @@ public class SimpleFileExplorer extends JFrame {
         forwardButton.addActionListener(e -> goForward());
 
 
+        // Mevcut dizin yolunu gösterecek metin kutusu
+
+        currentPathField = new JTextField();
+
+        currentPathField.setEditable(false);
+
+        currentPathField.setBorder(BorderFactory.createTitledBorder("Mevcut Dizin"));
+
+
         JPanel buttonPanel = new JPanel();
 
         buttonPanel.add(backButton);
 
         buttonPanel.add(forwardButton);
+
+        buttonPanel.add(currentPathField); // Metin kutusunu buton paneline ekle
 
 
         JScrollPane scrollPane = new JScrollPane(fileList);
@@ -197,6 +210,8 @@ public class SimpleFileExplorer extends JFrame {
 
         updateFileInfo(); // Dosya bilgilerini güncelle
 
+        currentPathField.setText(currentDirectory.getAbsolutePath()); // Mevcut dizin yolunu güncelle
+
     }
 
 
@@ -244,4 +259,4 @@ public class SimpleFileExplorer extends JFrame {
 
     }
 
-}
+} 
