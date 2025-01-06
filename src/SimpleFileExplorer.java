@@ -272,17 +272,37 @@ public class SimpleFileExplorer extends JFrame {
 
         if (files != null) {
 
+            // Önce klasörleri ekle
+
             for (File file : files) {
 
-                listModel.addElement(file);
+                if (file.isDirectory()) {
+
+                    listModel.addElement(file);
+
+                }
+
+            }
+
+            
+
+            // Sonra dosyaları ekle
+
+            for (File file : files) {
+
+                if (!file.isDirectory()) {
+
+                    listModel.addElement(file);
+
+                }
 
             }
 
         }
 
-        updateFileInfo(); // Dosya bilgilerini güncelle
+        updateFileInfo();
 
-        currentPathField.setText(currentDirectory.getAbsolutePath()); // Mevcut dizin yolunu güncelle
+        currentPathField.setText(currentDirectory.getAbsolutePath());
 
     }
 
