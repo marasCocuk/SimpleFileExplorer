@@ -94,18 +94,90 @@ public class SimpleFileExplorer extends JFrame {
 
         currentPathField = new JTextField();
 
-        currentPathField.setEditable(false);
+        currentPathField.setEditable(true);
 
         currentPathField.setBorder(BorderFactory.createTitledBorder("Mevcut Dizin"));
 
 
-        JPanel buttonPanel = new JPanel();
+        // Dizin yolu değiştiğinde işleyici ekle
 
-        buttonPanel.add(backButton);
+        currentPathField.addActionListener(e -> {
 
-        buttonPanel.add(forwardButton);
+            String newPath = currentPathField.getText().trim();
 
-        buttonPanel.add(currentPathField); // Metin kutusunu buton paneline ekle
+            File newDirectory = new File(newPath);
+
+            if (newDirectory.exists() && newDirectory.isDirectory()) {
+
+                openDirectory(newDirectory);
+
+            } else {
+
+                JOptionPane.showMessageDialog(this, 
+
+                    "Geçersiz dizin yolu!", 
+
+                    "Hata", 
+
+                    JOptionPane.ERROR_MESSAGE);
+
+                currentPathField.setText(currentDirectory.getAbsolutePath());
+
+            }
+
+        });
+
+
+        // Enter tuşuna basıldığında da çalışması için KeyListener ekle
+
+        currentPathField.addKeyListener(new KeyAdapter() {
+
+            @Override
+
+            public void keyPressed(KeyEvent e) {
+
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+                    String newPath = currentPathField.getText().trim();
+
+                    File newDirectory = new File(newPath);
+
+                    if (newDirectory.exists() && newDirectory.isDirectory()) {
+
+                        openDirectory(newDirectory);
+
+                    } else {
+
+                        JOptionPane.showMessageDialog(SimpleFileExplorer.this, 
+
+                            "Geçersiz dizin yolu!", 
+
+                            "Hata", 
+
+                            JOptionPane.ERROR_MESSAGE);
+
+                        currentPathField.setText(currentDirectory.getAbsolutePath());
+
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+
+        JPanel navigationPanel = new JPanel();
+
+        navigationPanel.add(backButton);
+
+        navigationPanel.add(forwardButton);
+
+        buttonPanel.add(navigationPanel, BorderLayout.WEST);
+
+        buttonPanel.add(currentPathField, BorderLayout.CENTER);
 
 
         JScrollPane scrollPane = new JScrollPane(fileList);
