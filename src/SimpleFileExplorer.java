@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 
 import java.awt.*;
 
@@ -48,31 +49,43 @@ public class SimpleFileExplorer extends JFrame {
         fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
-
-        // Klasör içeriğini göster
-
-        fileList.addMouseListener(new MouseAdapter() {
+        // Özel hücre görüntüleyici ekle
+        fileList.setCellRenderer(new DefaultListCellRenderer() {
+            private FileSystemView fileSystemView = FileSystemView.getFileSystemView();
 
             @Override
-
-            public void mouseClicked(MouseEvent e) {
-
-                if (e.getClickCount() == 2) {
-
-                    File selectedFile = fileList.getSelectedValue();
-
-                    if (selectedFile != null && selectedFile.isDirectory()) {
-
-                        openDirectory(selectedFile);
-
-                    }
-
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                    int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                
+                if (value instanceof File) {
+                    File file = (File) value;
+                    label.setIcon(fileSystemView.getSystemIcon(file));
+                    label.setText(file.getName());
                 }
-
-                updateFileInfo();
-
+                return label;
             }
+        });
 
+        // Seçim değişikliğini dinle
+        fileList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                updateFileInfo();
+            }
+        });
+
+        // Klasör içeriğini göster
+        fileList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    File selectedFile = fileList.getSelectedValue();
+                    if (selectedFile != null && selectedFile.isDirectory()) {
+                        openDirectory(selectedFile);
+                    }
+                }
+            }
         });
 
 
